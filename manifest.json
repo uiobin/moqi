@@ -1,0 +1,16 @@
+{
+  "name": "默契 · 人設記憶本",
+  "short_name": "默契",
+  "description": "把你的設定、對話與磨合筆記整理成一段可以貼給 AI 的載入包。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111318",
+  "theme_color": "#111318",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
