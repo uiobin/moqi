@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111318">
+<title>默契 · 人設記憶本</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
 
+<header>
+  <h1>默契</h1>
+  <p>人設記憶本</p>
+</header>
+
+<main>
+  <div id="list"></div>
+  <button id="add">＋ 新增人設</button>
+</main>
+
+<div id="editor" class="hidden">
+  <div class="sheet">
+    <h2 id="etitle">新增人設</h2>
+    <label>名字<input id="f-name" placeholder="例如：阿哲"></label>
+    <label>關係<input id="f-rel" placeholder="例如：大學同學"></label>
+    <label>說話方式<textarea id="f-tone" rows="3" placeholder="短句、口頭禪、語氣…"></textarea></label>
+    <label>在意的事<textarea id="f-like" rows="3" placeholder="喜好、地雷、習慣…"></textarea></label>
+    <label>備註<textarea id="f-note" rows="3"></textarea></label>
+    <div class="row">
+      <button id="save">儲存</button>
+      <button id="del" class="danger">刪除</button>
+      <button id="cancel" class="ghost">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>
