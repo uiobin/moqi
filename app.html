@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>默契</title>
+<meta name="theme-color" content="#111318">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#111318;--card:#1a1d23;--line:#2a2f38;--fg:#e8eaee;--dim:#8b929e;--accent:#7cd6b6}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;font-size:16px;line-height:1.6;padding:env(safe-area-inset-top) 16px calc(110px + env(safe-area-inset-bottom));min-height:100vh}
+header{padding:24px 4px 8px}
+header h1{margin:0;font-size:26px;letter-spacing:.12em;color:var(--accent)}
+header p{margin:2px 0 0;color:var(--dim);font-size:13px;letter-spacing:.08em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.card:active{background:#20242b}
+.card h3{margin:0 0 2px;font-size:17px}
+.card p{margin:4px 0 0;color:var(--dim);font-size:14px;white-space:pre-wrap}
+.card .rel{color:var(--accent);font-size:13px}
+.empty{color:var(--dim);text-align:center;margin:48px 0;line-height:2}
+#add{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));padding:15px;border:0;border-radius:14px;background:var(--accent);color:#0d1a15;font-size:16px;font-weight:700;font-family:inherit}
+#editor{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;z-index:10}
+.sheet{width:100%;max-height:92vh;overflow:auto;background:#171a20;border-radius:20px 20px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.sheet h2{margin:0 0 14px;font-size:18px}
+.sheet label{display:block;margin-bottom:12px;font-size:13px;color:var(--dim)}
+.sheet input,.sheet textarea{width:100%;margin-top:6px;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#0d0f13;color:var(--fg);font-size:16px;font-family:inherit;resize:vertical}
+.sheet input:focus,.sheet textarea:focus{outline:none;border-color:var(--accent)}
+.row{display:flex;gap:10px;margin-top:18px}
+.row button{flex:1;padding:13px;border:0;border-radius:12px;font-size:15px;font-family:inherit;background:var(--accent);color:#0d1a15;font-weight:700}
+.row .danger{background:#3a2226;color:#ff8f8f}
+.row .ghost{background:#242830;color:var(--fg)}
+#toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:#2b303a;color:var(--fg);padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header><h1>默契</h1><p>人設記憶本</p></header>
+<main id="list"></main>
+<button id="add">＋ 新增人設</button>
+<div id="editor" style="display:none">
+<div class="sheet">
+<h2 id="etitle">新增人設</h2>
+<label>名字<input id="f-name" placeholder="例如：阿哲"></label>
+<label>關係<input id="f-rel" placeholder="例如：大學同學"></label>
+<label>說話方式<textarea id="f-tone" rows="2" placeholder="短句、口頭禪、語氣…"></textarea></label>
+<label>在意的事<textarea id="f-like" rows="2" placeholder="喜好、地雷、習慣…"></textarea></label>
+<label>備註<textarea id="f-note" rows="2"></textarea></label>
+<div class="row">
+<button id="save">儲存</button>
+<button id="del" class="danger">刪除</button>
+<button id="cancel" class="ghost">取消</button>
+</div>
+</div>
+</div>
+<div id="toast"></div>
+<script>
+(function(){
+if('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations){
+navigator.serviceWorker.getRegistrations().then(function(rs){
+rs.forEach(function(r){ r.unregister(); });
+}).catch(function(){});
+}
+var KEY='moqi.personas.v1';
+var FIELDS=['name','rel','tone','like','note'];
+var data=[];
+try{ data=JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ data=[]; }
+var cur=null;
+function $(id){ return document.getElementById(id); }
+function esc(s){
+return String(s||'').replace(/[&<>"]/g,function(c){
+return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+});
+}
+function toast(msg){
+var t=$('toast');
+t.textContent=msg;
+t.className='on';
+clearTimeout(t._t);
+t._t=setTimeout(function(){ t.className=''; },1600);
+}
+function saveAll(){
+try{ localStorage.setItem(KEY,JSON.stringify(data)); }
+catch(e){ toast('儲存失敗：空間不足'); }
+}
+function render(){
+var box=$('list');
+if(!data.length){
+box.innerHTML='<p class="empty">還沒有人設。<br>點下面的按鈕，先記下第一個人的樣子。</p>';
+return;
+}
+var html='';
+data.forEach(function(p,i){
+html+='<article class="card" data-i="'+i+'">'
++'<h3>'+(esc(p.name)||'未命名')+'</h3>'
++(p.rel?'<p class="rel">'+esc(p.rel)+'</p>':'')
++(p.tone?'<p>'+esc(p.tone)+'</p>':'')
++(p.like?'<p>'+esc(p.like)+'</p>':'')
++(p.note?'<p>'+esc(p.note)+'</p>':'')
++'</article>';
+});
+box.innerHTML=html;
+var cards=box.querySelectorAll('.card');
+for(var i=0;i<cards.length;i++){
+cards[i].onclick=function(){
+openEditor(Number(this.getAttribute('data-i')));
+};
+}
+}
+function openEditor(i){
+cur=i;
+var p=(i===null)?{}:data[i];
+$('etitle').textContent=(i===null)?'新增人設':'編輯人設';
+FIELDS.forEach(function(f){ $('f-'+f).value=p[f]||''; });
+$('del').style.display=(i===null)?'none':'';
+$('del').textContent='刪除';
+$('del').removeAttribute('data-armed');
+$('editor').style.display='flex';
+}
+function closeEditor(){
+$('editor').style.display='none';
+cur=null;
+}
+$('add').onclick=function(){ openEditor(null); };
+$('cancel').onclick=closeEditor;
+$('save').onclick=function(){
+var p={};
+FIELDS.forEach(function(f){ p[f]=$('f-'+f).value.trim(); });
+if(!p.name){ toast('先填個名字'); return; }
+if(cur===null){ data.push(p); } else { data[cur]=p; }
+saveAll(); render(); closeEditor(); toast('已儲存');
+};
+$('del').onclick=function(){
+if(cur===null) return;
+var btn=$('del');
+if(!btn.getAttribute('data-armed')){
+btn.setAttribute('data-armed','1');
+btn.textContent='再按一次';
+setTimeout(function(){
+if(btn.getAttribute('data-armed')){
+btn.removeAttribute('data-armed');
+btn.textContent='刪除';
+}
+},2500);
+return;
+}
+data.splice(cur,1);
+saveAll(); render(); closeEditor(); toast('已刪除');
+};
+$('editor').onclick=function(e){
+if(e.target && e.target.id==='editor') closeEditor();
+};
+render();
+})();
+</script>
+</body>
+</html>
