@@ -1,0 +1,38 @@
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#111318;--card:#1a1d23;--line:#2a2f38;--fg:#e8eaee;--dim:#8b929e;--accent:#7cd6b6}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);
+  font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;
+  font-size:16px;line-height:1.6;
+  padding:env(safe-area-inset-top) 16px calc(96px + env(safe-area-inset-bottom));
+  min-height:100vh}
+header{padding:24px 4px 8px}
+header h1{margin:0;font-size:26px;letter-spacing:.12em;color:var(--accent)}
+header p{margin:2px 0 0;color:var(--dim);font-size:13px;letter-spacing:.08em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:14px 16px;margin-bottom:12px;cursor:pointer}
+.card:active{background:#20242b}
+.card h3{margin:0 0 2px;font-size:17px}
+.card p{margin:4px 0 0;color:var(--dim);font-size:14px;white-space:pre-wrap}
+.card .rel{color:var(--accent);font-size:13px}
+.empty{color:var(--dim);text-align:center;margin:48px 0;line-height:2}
+#add{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));
+  padding:15px;border:0;border-radius:14px;background:var(--accent);color:#0d1a15;
+  font-size:16px;font-weight:700;font-family:inherit}
+.hidden{display:none}
+#editor{position:fixed;inset:0;background:#0009;backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;z-index:10}
+.sheet{width:100%;max-height:92vh;overflow:auto;background:#171a20;
+  border-radius:20px 20px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line)}
+.sheet h2{margin:0 0 14px;font-size:18px}
+.sheet label{display:block;margin-bottom:12px;font-size:13px;color:var(--dim)}
+.sheet input,.sheet textarea{width:100%;margin-top:6px;padding:11px 12px;border-radius:10px;
+  border:1px solid var(--line);background:#0d0f13;color:var(--fg);
+  font-size:16px;font-family:inherit;resize:vertical}
+.sheet input:focus,.sheet textarea:focus{outline:none;border-color:var(--accent)}
+.row{display:flex;gap:10px;margin-top:18px}
+.row button{flex:1;padding:13px;border:0;border-radius:12px;font-size:15px;
+  font-family:inherit;background:var(--accent);color:#0d1a15;font-weight:700}
+.row .danger{background:#3a2226;color:#ff8f8f}
+.row .ghost{background:#242830;color:var(--fg)}
