@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>默契 · 記憶</title>
 <meta name="theme-color" content="#111318">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg:#111318;--card:#1a1d23;--line:#2a2f38;--fg:#e8eaee;--dim:#8b929e;--accent:#7cd6b6}
@@ -73,9 +75,7 @@ header p{margin:2px 0 0;color:var(--dim);font-size:13px;letter-spacing:.08em}
 <div id="toast"></div>
 <script>
 (function(){
-if('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations){
-navigator.serviceWorker.getRegistrations().then(function(rs){ rs.forEach(function(r){ r.unregister(); }); }).catch(function(){});
-}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(function(){}); }
 var KEY='moqi.memo.v1';
 var OLD='moqi.personas.v1';
 var items=[];
